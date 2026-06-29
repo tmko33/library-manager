@@ -1,9 +1,13 @@
+from dataclasses import dataclass, field
 from models.book import Book
 
 @dataclass
 class Library:
-    def __init__(self):
-        self.books: list[Book] = []
+    """
+    Represents the system of the library.
+    """
+
+    books: list[Book] = field(default_factory=list)
 
     def add_book(self, book: Book) -> None:
         self.books.append(book)

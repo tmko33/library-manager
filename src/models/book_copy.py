@@ -3,11 +3,9 @@ class BookCopy:
     """
     Represents a copy of the book from the library.
     """
-
-    def __init__(self, id, code, available=True):
-        self.id = id
-        self.code = code
-        self.available = available
+    id: int
+    code: str
+    available: bool
 
     def borrow_book(self):
         if(not self.available):

@@ -1,9 +1,13 @@
-class Book:
+# models/book.py
+from dataclasses import dataclass
+from models.author import Author
 
-    def __init__(self, title, author, year, code, resume, publisher):
-        self.title = title
-        self.author = list[author]
-        self.year = year
-        self.code = code
-        self.resume = resume
-        self.publisher = publisher
+@dataclass
+class Book:
+    isbn: str
+    title: str
+    author: list[Author]
+    year: int
+    code: int
+    summary: str
+    publisher: str
