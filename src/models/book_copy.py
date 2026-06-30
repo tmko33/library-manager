@@ -8,6 +8,3 @@ class BookCopy:
     """
     id: int
     isbn: str
-    
-    def get_isbn(self) -> str:
-        return self.isbn

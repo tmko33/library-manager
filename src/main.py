@@ -1,21 +1,29 @@
-from models import Book, Library, Author, Country
+from fastapi import FastAPI
 
-def main():
-    country1 = Country("Colombia")
-    author1 = Author(1, 1999, "Robert", [country1])
-    book1 = Book("0", "1984", [author1], 3333, 1, "hi", "LOL")
-    book2 = Book("1", "guasaa", [author1], 1111, 2, "hello", "zamn")
-    library = Library()
-    library.add_book(book1)
-    library.add_book(book2)
-    print(library.list_books())
+from services.book_service import BookService
 
-    print(library.find_book_by_isbn("0"))
-    print(library.remove_book("0"))
-    print(library.add_user("phanor", "nolose", "albertguasa", "315655154"))
-    print(library.list_users())
-    print(library.borrow_book(0, "1"))
-    print(library.list_loans())
+from schemas.book_schema import BookCreate
 
-main()
-    
+
+app = FastAPI()
+
+book_service = BookService()
+
+@app.get("/books", response_model=list[BookResponse])
+def get_books():
+    return book_service.get_all_books()
+
+
+@app.post("/books")
+def create_book(book: BookCreate):
+    # BookCreate solo tiene lo que el usuario envió (isbn, title, etc.)
+    # El ID y la lista de copias se generan dentro del servicio
+    new_book = book_service.create_book(
+        isbn=book.isbn,
+        title=book.title,
+        author=book.author,
+        year=book.year,
+        summary=book.summary,
+        publisher=book.publisher
+    )
+    return new_book

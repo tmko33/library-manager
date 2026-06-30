@@ -11,6 +11,3 @@ class Loan:
     user: User
     copy: BookCopy
     returned : bool = False
-
-    def get_book_copy(self) -> BookCopy:
-        return self.copy

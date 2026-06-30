@@ -21,15 +21,34 @@ class Library:
     users_id : int = 0
 
 
-    def add_book(self, book: Book) -> None:
-        try:
-            # Si el libro ya existe, lanzará la excepción y entraremos al 'except'
-            self.find_book_by_isbn(book.isbn)
-            raise DuplicateBookError("Book already in the library")
-        except BookNotFoundError:
-            # Si no existe (da error), es justo lo que queremos para poder agregarlo
-            self.books.append(book)
+    def create_book(self, isbn: str, title: str, author: Author, year: str, summary: str, publisher: str)  -> Book:
+        n_book = Book(self.book_id, isbn, title, author, year, summary, publisher)
+        self.book_id += 1
 
+        return n_book
+
+    
+    def add_book(self, book: Book) -> None:
+        if(self.exists_book(book.isbn)):
+            raise DuplicateBookError(...)
+
+        self.books.append(book)
+
+
+    def add_copy(self, isbn: str, quantity: int) -> None:
+        book = self.find_book_by_isbn(isbn)
+        if(len(book.copies) > 0):
+            copy_id = book.copies[-1].id + 1
+        else:
+            copy_id = len(book.copies)
+        for i in range(quantity):
+            n_copy = BookCopy(copy_id, isbn)
+            book.copies.append(n_copy)
+            copy_id += 1
+
+
+    def exists_book(self, isbn: str) -> bool:
+        return any(book.isbn == isbn for book in self.books)
 
     def list_books(self) -> list[Book]:
         return self.books
@@ -50,7 +69,7 @@ class Library:
             )
 
         for book in self.books:
-            if(book.get_isbn() == isbn):
+            if(book.isbn == isbn):
                 return book
 
         raise BookNotFoundError(
@@ -65,13 +84,11 @@ class Library:
             )
         book = self.find_book_by_isbn(isbn)
         self.books.remove(book)
-        return "The Book has been removed"
 
 
     def search_user_id(self, user_id) -> User:
-
         for user in self.users:
-            if(user.get_id() == user_id):
+            if(user.id == user_id):
                 return user
         
         raise UserNotFoundError(
@@ -79,7 +96,7 @@ class Library:
         )
 
 
-    def add_user(self, name: str, address: str, email: str, phone: str) -> str:
+    def add_user(self, name: str, address: str, email: str, phone: str) -> User:
         n_user = User(self.users_id, name, address, email, phone)
         for user in self.users:
             if(user == n_user):
@@ -88,24 +105,26 @@ class Library:
                 )
         self.users.append(n_user)
         
-        return "The user has been added"
+        self.users_id += 1
+        return n_user
 
 
-    def check_availability(self, book_isbn: str) -> bool:
+    def check_availability(self, copy: BookCopy) -> bool:
         available = True
         for loan in self.loans:
-            if(loan.get_book_copy().get_isbn() == book_isbn):
+            if(loan.book_copy == copy):
                 available = False
+                break
         return available
 
-    def borrow_book(self, user_id: int, isbn: str) -> Loan:
-            
+
+    def borrow_book(self, user_id: int, isbn: str) -> Loan:            
         user = self.search_user_id(user_id)
         book = self.find_book_by_isbn(isbn)
         
         target_copy = None
-        for copy in book.get_copies():
-            if(self.check_availability(copy.get_isbn())):
+        for copy in book.copies:
+            if(self.check_availability(copy)):
                 target_copy = copy
                 break
         
