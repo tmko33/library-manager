@@ -60,7 +60,7 @@ jobs:
         run: alembic upgrade head
 
       - name: Run tests
-        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=65
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=85
 
   docker:
     name: Build Docker image

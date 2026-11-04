@@ -100,6 +100,7 @@ filterwarnings = ["error::DeprecationWarning:app.*"]
 # --------------------------------------------------------------------------- #
 [tool.coverage.run]
 source = ["app"]
+concurrency = ["greenlet", "thread"]
 omit = ["app/main.py"]
 
 [tool.coverage.report]

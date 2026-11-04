@@ -7,6 +7,7 @@ from fastapi import APIRouter, Query
 from app.api.deps import CurrentMember, PageDep, SessionDep, StaffMember, is_staff
 from app.core.exceptions import ForbiddenError
 from app.core.pagination import Page
+from app.models.member import MemberRole
 from app.schemas.common import Message
 from app.schemas.member import MemberCreate, MemberRead, MemberUpdate
 from app.services.member_service import MemberService
@@ -34,7 +35,9 @@ async def list_members(
     status_code=201,
     summary="Create a member or staff account",
 )
-async def create_member(data: MemberCreate, session: SessionDep, _: StaffMember) -> MemberRead:
+async def create_member(data: MemberCreate, session: SessionDep, staff: StaffMember) -> MemberRead:
+    if data.role == MemberRole.ADMIN and staff.role != MemberRole.ADMIN:
+        raise ForbiddenError("Only admins can create admin accounts.")
     member = await MemberService(session).create_member(data)
     return MemberRead.model_validate(member)
 
@@ -49,13 +52,24 @@ async def get_member(member_id: int, session: SessionDep, current: CurrentMember
 
 @router.patch("/{member_id}", response_model=MemberRead, summary="Update a member")
 async def update_member(
-    member_id: int, data: MemberUpdate, session: SessionDep, _: StaffMember
+    member_id: int, data: MemberUpdate, session: SessionDep, staff: StaffMember
 ) -> MemberRead:
-    member = await MemberService(session).update_member(member_id, data)
+    service = MemberService(session)
+    target = await service.get_member(member_id)
+    if target.role == MemberRole.ADMIN and staff.role != MemberRole.ADMIN:
+        raise ForbiddenError("Only admins can modify admin accounts.")
+    if data.role == MemberRole.ADMIN and staff.role != MemberRole.ADMIN:
+        raise ForbiddenError("Only admins can promote a member to admin.")
+
+    member = await service.update_member(member_id, data)
     return MemberRead.model_validate(member)
 
 
 @router.delete("/{member_id}", response_model=Message, summary="Deactivate a member")
-async def deactivate_member(member_id: int, session: SessionDep, _: StaffMember) -> Message:
-    await MemberService(session).deactivate_member(member_id)
+async def deactivate_member(member_id: int, session: SessionDep, staff: StaffMember) -> Message:
+    service = MemberService(session)
+    target = await service.get_member(member_id)
+    if target.role == MemberRole.ADMIN and staff.role != MemberRole.ADMIN:
+        raise ForbiddenError("Only admins can deactivate admin accounts.")
+    await service.deactivate_member(member_id)
     return Message(message="Member deactivated.")

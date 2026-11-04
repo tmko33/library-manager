@@ -2,9 +2,14 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import BranchNotFoundError, ConflictError, CountryNotFoundError
+from app.core.exceptions import (
+    BranchNotFoundError,
+    ConflictError,
+    CountryNotFoundError,
+)
 from app.models.branch import Branch
 from app.repositories.branch_repository import BranchRepository
+from app.repositories.copy_repository import CopyRepository
 from app.repositories.country_repository import CountryRepository
 from app.schemas.branch import BranchCreate, BranchUpdate
 from app.services.base import BaseService
@@ -15,6 +20,7 @@ class BranchService(BaseService):
         super().__init__(session)
         self.branches = BranchRepository(session)
         self.countries = CountryRepository(session)
+        self.copies = CopyRepository(session)
 
     async def list_branches(
         self,
@@ -66,5 +72,10 @@ class BranchService(BaseService):
 
     async def delete_branch(self, branch_id: int) -> None:
         branch = await self.get_branch(branch_id)
+        if await self.copies.count_by_branch(branch_id):
+            raise ConflictError(
+                "Cannot delete a branch that still holds copies.",
+                code="branch_has_copies",
+            )
         await self.branches.delete(branch)
         await self.commit()
