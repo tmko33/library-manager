@@ -37,6 +37,7 @@ COPY --from=builder /opt/venv /opt/venv
 COPY alembic.ini ./
 COPY alembic ./alembic
 COPY app ./app
+COPY scripts ./scripts
 COPY docker ./docker
 
 RUN sed -i 's/\r$//' /app/docker/start.sh && chmod +x /app/docker/start.sh

@@ -24,11 +24,13 @@ Optional: `LOAN_PERIOD_DAYS`, `MAX_ACTIVE_LOANS`, `FINE_PER_DAY`,
 3. The image runs `docker/start.sh`, which applies `alembic upgrade head` and then
    starts Uvicorn on the port Render injects (`$PORT`). No custom start command is
    needed in `render.yaml`.
-4. Seed demo data once from the Render shell:
+4. Seed demo data once. Render's free plan does not include a shell, so use the
+   startup flag instead:
 
-   ```bash
-   python -m scripts.seed
-   ```
+   - **Environment** → add `SEED_DEMO_DATA=true`.
+   - **Manual Deploy → Deploy latest commit**.
+   - The logs show `demo data created`; the operation is idempotent.
+   - Remove the variable (or set it to `false`) and redeploy.
 
 The health check points at `/health/ready`, which returns 503 when the database
 is unreachable, so failed deployments roll back automatically.

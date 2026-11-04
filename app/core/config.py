@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     fine_per_day: float = 0.50
     reservation_hold_days: int = 3
 
+    # Demo/bootstrap
+    seed_demo_data: bool = False
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"

@@ -1,5 +1,6 @@
 """FastAPI application factory."""
 
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -15,7 +16,10 @@ from app.core.config import settings
 from app.core.handlers import register_exception_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
-from app.db.session import engine
+from app.db.session import AsyncSessionLocal, engine
+from app.demo_data import seed_demo_data
+
+logger = logging.getLogger("app.startup")
 
 DESCRIPTION = """
 REST API for managing a network of public libraries.
@@ -29,6 +33,10 @@ REST API for managing a network of public libraries.
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     configure_logging()
+    if settings.seed_demo_data:
+        async with AsyncSessionLocal() as session:
+            created = await seed_demo_data(session)
+        logger.info("demo data %s", "created" if created else "already present")
     yield
     await engine.dispose()
 
