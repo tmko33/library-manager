@@ -19,7 +19,7 @@ flowchart LR
     API --> Services[Services<br/>business rules]
     Services --> Repos[Repositories<br/>SQLAlchemy 2.0]
     Repos --> DB[(PostgreSQL)]
-    API -.-> Metrics[/metrics]
+    API -.-> Metrics["/metrics"]
     Services -.-> Jobs[Maintenance jobs<br/>overdue + holds]
     Jobs --> Repos
 

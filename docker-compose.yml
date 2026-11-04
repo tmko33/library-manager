@@ -28,8 +28,7 @@ services:
       SECRET_KEY: insecure-development-secret-change-me-in-production
     ports:
       - "8000:8000"
-    command: >
-      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    command: ["/app/docker/start.sh"]
 
 volumes:
   library_data:
