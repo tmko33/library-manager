@@ -9,6 +9,5 @@ __pycache__
 .coverage
 htmlcov
 .env
-*.md
+docs
 tests
-alembic/versions

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: library-manager-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health/ready
+    dockerCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: library-manager-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: '["*"]'
+
+databases:
+  - name: library-manager-db
+    plan: free
+    databaseName: library
+    user: library

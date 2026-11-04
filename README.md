@@ -1,22 +1,34 @@
 # Library Manager API
 
+[![CI](https://github.com/tmko33/library-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/tmko33/library-manager/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688.svg)](https://fastapi.tiangolo.com/)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](#development)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 A production-style REST API for managing a network of public libraries: catalogue,
 physical copies, members, loans, reservations and fines.
 
 Built with **FastAPI**, **SQLAlchemy 2.0 (async)**, **PostgreSQL** and **Alembic**.
 
-## Features
-
-- Full CRUD for books, authors, publishers, branches and copies.
-- Physical copy tracking with inventory codes and lifecycle states.
-- Lending workflow: borrow, return, renew, overdue detection.
-- Reservation queue with FIFO priority and hold windows.
-- Automatic fine calculation for late returns.
-- JWT authentication with `admin`, `librarian` and `member` roles.
-- Pagination, filtering and sorting on every collection.
-- Consistent RFC 7807 (`problem+json`) error responses.
-
 ## Architecture
+
+```mermaid
+flowchart LR
+    Client[Client] -->|HTTP / JWT| API[FastAPI routers]
+    API --> Services[Services<br/>business rules]
+    Services --> Repos[Repositories<br/>SQLAlchemy 2.0]
+    Repos --> DB[(PostgreSQL)]
+    API -.-> Metrics[/metrics]
+    Services -.-> Jobs[Maintenance jobs<br/>overdue + holds]
+    Jobs --> Repos
+
+    subgraph Layers
+        API
+        Services
+        Repos
+    end
+```
 
 ```text
 app/
@@ -126,6 +138,24 @@ python -m scripts.maintenance
 ```
 
 Schedule it with cron, a Kubernetes CronJob or your platform's scheduler.
+
+## Features
+
+- Full CRUD for books, authors, publishers, branches and copies.
+- Physical copy tracking with inventory codes and lifecycle states.
+- Lending workflow: borrow, return, renew, overdue detection.
+- Reservation queue with FIFO priority and hold windows.
+- Automatic fine calculation for late returns.
+- JWT authentication with `admin`, `librarian` and `member` roles.
+- Pagination, filtering and sorting on every collection.
+- Consistent RFC 7807 (`problem+json`) error responses.
+- Request correlation, Prometheus metrics and readiness probes.
+
+## Deployment
+
+See [docs/deployment.md](docs/deployment.md) for Render and Docker instructions.
+The repository ships a `render.yaml` blueprint that provisions the API and a
+PostgreSQL database, running migrations on every deploy.
 
 ## Development
 
