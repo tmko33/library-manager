@@ -77,7 +77,8 @@ uvicorn app.main:app --reload
 python -m scripts.seed
 ```
 
-This creates an admin, a librarian, a member and a small catalogue.
+This creates an admin, a librarian, a member and a small catalogue. On platforms
+without shell access, set `SEED_DEMO_DATA=true`, redeploy once, then remove it.
 
 | Account | Email | Password |
 |---|---|---|
