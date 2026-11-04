@@ -19,6 +19,7 @@ dependencies = [
     "pyjwt>=2.8.0",
     "pwdlib[argon2]>=0.2.0",
     "python-multipart>=0.0.9",
+    "prometheus-client>=0.20.0",
 ]
 
 [project.optional-dependencies]
