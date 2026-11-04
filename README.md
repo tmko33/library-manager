@@ -165,6 +165,20 @@ PostgreSQL database, running migrations on every deploy.
 - [Architecture decisions](docs/adr/) — layering, async SQLAlchemy, reservations
   and authorization.
 
+## Frontend
+
+`frontend/` is a React + TypeScript SPA (Vite, TanStack Query, React Router,
+Tailwind) that consumes this API: catalogue search, book detail, borrowing,
+returns, renewals, reservations and fines.
+
+```bash
+cd frontend
+npm install
+npm run dev        # proxies /api to http://localhost:8000
+```
+
+See [frontend/README.md](frontend/README.md) for details.
+
 ## Development
 
 ```bash

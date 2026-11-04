@@ -16,6 +16,22 @@ services:
       - key: CORS_ORIGINS
         value: '["*"]'
 
+  - type: web
+    name: library-manager-web
+    runtime: static
+    plan: free
+    buildCommand: cd frontend && npm ci --include=dev && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_API_URL
+        value: https://library-manager-api-ueba.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
 databases:
   - name: library-manager-db
     plan: free

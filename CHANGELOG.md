@@ -14,6 +14,10 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- React + TypeScript frontend (`frontend/`) with Tailwind, TanStack Query and
+  React Router: catalogue, book detail, loans, reservations and account views.
+- Static site blueprint for the frontend in `render.yaml`.
+- Startup demo seeding (`SEED_DEMO_DATA=true`) for platforms without shell.
 - Layered FastAPI application (routers → services → repositories).
 - SQLAlchemy 2.0 async models for countries, authors, publishers, books,
   copies, branches, members, loans, reservations and fines.
