@@ -70,6 +70,12 @@ class CopyRepository(BaseRepository[BookCopy]):
             statement = statement.where(BookCopy.branch_id == branch_id)
         return await self.session.scalar(statement)
 
+    async def count_by_branch(self, branch_id: int) -> int:
+        statement = (
+            select(func.count()).select_from(BookCopy).where(BookCopy.branch_id == branch_id)
+        )
+        return int(await self.session.scalar(statement) or 0)
+
     async def has_active_loan(self, copy_id: int) -> bool:
         statement = (
             select(func.count())

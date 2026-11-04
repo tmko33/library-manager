@@ -3,7 +3,7 @@
 from collections.abc import Mapping
 from typing import Any
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -66,7 +66,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             for error in exc.errors()
         ]
         return _problem_response(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=422,
             title="Validation error",
             detail="The request payload is invalid.",
             code="validation_error",
