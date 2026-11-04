@@ -45,6 +45,11 @@ export function Layout() {
                 <NavLink to="/account" className={navClass}>
                   Mi cuenta
                 </NavLink>
+                {member.role !== 'member' ? (
+                  <NavLink to="/staff" className={navClass}>
+                    Panel
+                  </NavLink>
+                ) : null}
               </>
             ) : null}
           </nav>

@@ -2,6 +2,17 @@
 
 React + TypeScript SPA for the [Library Manager API](../README.md).
 
+## Features
+
+- Catalogue search, book detail & availability.
+- Authentication with redirect-back and demo accounts.
+- Borrow, renew, return and reserve from the UI.
+- Account page with profile and fines.
+- **Staff panel** (librarian/admin): books, authors, publishers, branches,
+  copies, members, loans and fines.
+- Typed API client with JWT and RFC 7807 error handling.
+- Query invalidation after mutations keeps availability in sync.
+
 ## Stack
 
 - **React 19** + **Vite**
@@ -20,6 +31,7 @@ src/
 ├── components/   layout, form controls, badges, pagination
 ├── lib/          formatting and error helpers
 ├── pages/        catalogue, book detail, loans, reservations, account
+│   └── staff/    books, authors, publishers, branches, copies, members, loans, fines
 ├── App.tsx       routes
 └── main.tsx      providers
 ```

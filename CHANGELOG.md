@@ -14,6 +14,8 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Staff panel in the frontend (librarian/admin): books, authors, publishers,
+  branches, copies, members, loans and fines.
 - React + TypeScript frontend (`frontend/`) with Tailwind, TanStack Query and
   React Router: catalogue, book detail, loans, reservations and account views.
 - Static site blueprint for the frontend in `render.yaml`.

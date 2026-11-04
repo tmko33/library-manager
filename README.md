@@ -169,7 +169,9 @@ PostgreSQL database, running migrations on every deploy.
 
 `frontend/` is a React + TypeScript SPA (Vite, TanStack Query, React Router,
 Tailwind) that consumes this API: catalogue search, book detail, borrowing,
-returns, renewals, reservations and fines.
+returns, renewals, reservations and fines. Librarians and admins also get a
+staff panel for books, authors, publishers, branches, copies, members, loans
+and fines.
 
 ```bash
 cd frontend
