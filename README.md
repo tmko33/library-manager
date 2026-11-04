@@ -157,6 +157,13 @@ See [docs/deployment.md](docs/deployment.md) for Render and Docker instructions.
 The repository ships a `render.yaml` blueprint that provisions the API and a
 PostgreSQL database, running migrations on every deploy.
 
+## Documentation
+
+- [API walkthrough](docs/api-examples.md) — curl examples for every workflow.
+- [Deployment guide](docs/deployment.md) — Render, Docker and scheduled jobs.
+- [Architecture decisions](docs/adr/) — layering, async SQLAlchemy, reservations
+  and authorization.
+
 ## Development
 
 ```bash
