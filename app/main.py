@@ -5,11 +5,16 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from sqlalchemy import text
 
+from app.api.deps import SessionDep
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.handlers import register_exception_handlers
 from app.core.logging import configure_logging
+from app.core.middleware import RequestContextMiddleware
 from app.db.session import engine
 
 DESCRIPTION = """
@@ -41,11 +46,12 @@ def create_app() -> FastAPI:
 
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"] if not settings.is_production else [],
+        allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    application.add_middleware(RequestContextMiddleware)
 
     register_exception_handlers(application)
     application.include_router(api_router, prefix=settings.api_v1_prefix)
@@ -53,6 +59,21 @@ def create_app() -> FastAPI:
     @application.get("/health", tags=["system"], summary="Liveness probe")
     async def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @application.get("/health/ready", tags=["system"], summary="Readiness probe")
+    async def readiness(session: SessionDep) -> JSONResponse:
+        try:
+            await session.execute(text("SELECT 1"))
+        except Exception:
+            return JSONResponse(
+                status_code=503,
+                content={"status": "unavailable", "database": "down"},
+            )
+        return JSONResponse(status_code=200, content={"status": "ready", "database": "up"})
+
+    @application.get("/metrics", include_in_schema=False)
+    async def metrics() -> Response:
+        return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     @application.get("/", tags=["system"], summary="API entry point")
     async def root() -> dict[str, str]:

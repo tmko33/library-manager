@@ -107,6 +107,26 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/v1/loans
 - Holds expire after `RESERVATION_HOLD_DAYS` and are released.
 - Late returns generate a fine of `FINE_PER_DAY` per day overdue.
 
+## Operations
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | Liveness probe |
+| `GET /health/ready` | Readiness probe (checks the database) |
+| `GET /metrics` | Prometheus metrics |
+
+Every response carries an `X-Request-ID` header (generated or propagated from
+the request). Access logs include the request id so a single request can be
+traced across services.
+
+Scheduled maintenance runs overdue detection and hold expiration:
+
+```bash
+python -m scripts.maintenance
+```
+
+Schedule it with cron, a Kubernetes CronJob or your platform's scheduler.
+
 ## Development
 
 ```bash

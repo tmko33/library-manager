@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     environment: Literal["development", "test", "production"] = "development"
     debug: bool = False
     api_v1_prefix: str = "/api/v1"
+    cors_origins: list[str] = ["*"]
 
     # Database
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/library"
