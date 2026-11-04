@@ -21,8 +21,9 @@ Optional: `LOAN_PERIOD_DAYS`, `MAX_ACTIVE_LOANS`, `FINE_PER_DAY`,
 2. In Render, choose **New → Blueprint** and select this repository. Render reads
    `render.yaml`, creates the web service and the PostgreSQL instance, and wires
    `DATABASE_URL`.
-3. The start command runs `alembic upgrade head` before Uvicorn, so the schema is
-   migrated on every deploy.
+3. The image runs `docker/start.sh`, which applies `alembic upgrade head` and then
+   starts Uvicorn on the port Render injects (`$PORT`). No custom start command is
+   needed in `render.yaml`.
 4. Seed demo data once from the Render shell:
 
    ```bash
@@ -42,11 +43,14 @@ docker run --rm -p 8000:8000 \
   library-manager
 ```
 
-Run migrations as a separate step:
+Run migrations as a separate step (the image's entrypoint already does this when
+started normally):
 
 ```bash
 docker run --rm -e DATABASE_URL=... library-manager alembic upgrade head
 ```
+
+The container respects `PORT`; locally it defaults to `8000`.
 
 ## Scheduled maintenance
 
