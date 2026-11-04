@@ -3,6 +3,7 @@
 from functools import lru_cache
 from typing import Literal
 
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -45,6 +46,28 @@ class Settings(BaseSettings):
     @property
     def is_testing(self) -> bool:
         return self.environment == "test"
+
+    @field_validator("database_url", "test_database_url")
+    @classmethod
+    def _normalise_database_url(cls, value: str) -> str:
+        """Accept the URLs handed out by hosted providers (Render, Heroku)."""
+        if value.startswith("postgres://"):
+            return "postgresql+asyncpg://" + value.removeprefix("postgres://")
+        if value.startswith("postgresql://"):
+            return "postgresql+asyncpg://" + value.removeprefix("postgresql://")
+        return value
+
+    @model_validator(mode="after")
+    def _validate_production_secrets(self) -> "Settings":
+        if self.environment != "production":
+            return self
+
+        insecure_markers = ("change-me", "insecure-development")
+        if len(self.secret_key) < 32 or any(
+            marker in self.secret_key for marker in insecure_markers
+        ):
+            raise ValueError("SECRET_KEY must be a strong, unique value in production.")
+        return self
 
 
 @lru_cache
