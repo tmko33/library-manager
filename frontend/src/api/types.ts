@@ -123,3 +123,115 @@ export interface RegisterPayload {
   phone?: string
   address?: string
 }
+
+export interface Country {
+  id: number
+  name: string
+  iso_code?: string | null
+}
+
+export interface Author {
+  id: number
+  name: string
+  bio?: string | null
+  birth_year?: number | null
+  country_id?: number | null
+  country?: Country | null
+}
+
+export interface Publisher {
+  id: number
+  name: string
+  website?: string | null
+}
+
+export interface Branch {
+  id: number
+  name: string
+  address: string
+  city: string
+  country_id?: number | null
+  is_active: boolean
+  country?: Country | null
+}
+
+export type CopyStatus = 'available' | 'on_loan' | 'reserved' | 'lost' | 'maintenance'
+
+export interface Copy {
+  id: number
+  inventory_code: string
+  book_id: number
+  branch_id: number
+  status: CopyStatus
+  acquired_at?: string | null
+  notes?: string | null
+  book?: BookBrief
+  branch?: Pick<Branch, 'id' | 'name' | 'city'>
+}
+
+export interface BookPayload {
+  isbn: string
+  title: string
+  publication_year?: number | null
+  summary?: string | null
+  language: string
+  pages?: number | null
+  cover_url?: string | null
+  publisher_id?: number | null
+  author_ids: number[]
+}
+
+export interface AuthorPayload {
+  name: string
+  bio?: string | null
+  birth_year?: number | null
+  country_id?: number | null
+}
+
+export interface PublisherPayload {
+  name: string
+  website?: string | null
+}
+
+export interface BranchPayload {
+  name: string
+  address: string
+  city: string
+  country_id?: number | null
+  is_active: boolean
+}
+
+export interface CopyPayload {
+  book_id: number
+  branch_id: number
+  inventory_code: string
+  acquired_at?: string | null
+  notes?: string | null
+}
+
+export interface CopyUpdatePayload {
+  branch_id?: number
+  status?: CopyStatus
+  notes?: string | null
+}
+
+export interface MemberPayload {
+  email: string
+  password: string
+  full_name: string
+  phone?: string | null
+  address?: string | null
+  role: MemberRole
+  membership_expires_at?: string | null
+}
+
+export interface MemberUpdatePayload {
+  email?: string
+  full_name?: string
+  phone?: string | null
+  address?: string | null
+  role?: MemberRole
+  is_active?: boolean
+  membership_expires_at?: string | null
+}
+
